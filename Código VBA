@@ -1,0 +1,94 @@
+Sub Faturas_Unimed()
+
+    Dim Arquivo As Variant
+
+    Dim TempWb As Workbook
+
+    ActiveWorkbook.Worksheets.Add
+    ActiveSheet.Name = "Faturas Unimed"
+    
+    Dim DestinoSh As Worksheet: Set DestinoSh = ActiveWorkbook.Worksheets("Faturas Unimed")
+    
+    
+    Mensagem = "Importar um novo arquivo?"
+    
+    Estilo = vbYesNo + vbQuestion
+    Titulo = "Feitiço do tempo - Marmota's day"
+    
+    Linha_dest = 1
+    
+    Do
+        
+    
+    Arquivo = Application.GetOpenFilename("Arquivos Texto(*.txt), *.txt")
+
+    If Arquivo = False Then Exit Sub
+
+    Application.ScreenUpdating = False
+
+    
+    Workbooks.OpenText Filename:=Arquivo, _
+    Origin:=xlWindows, StartRow:=9, DataType:=xlDelimited, TextQualifier:= _
+    xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, Semicolon:=False, _
+    Comma:=False, Space:=False, Other:=True, OtherChar:="#", TrailingMinusNumbers:=True
+    
+
+    
+    
+    Set TempWb = ActiveWorkbook
+    
+    
+    filtro_arq = "G1:G" & Range("A1048576").End(xlUp).Row + 1
+    
+    Columns("G:G").Select
+    Selection.AutoFilter
+    ActiveSheet.Range(filtro_arq).AutoFilter Field:=1, Criteria1:="="
+    Range("G1").Select
+    ActiveCell.Offset(1, 0).Range("A1").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.EntireRow.Delete
+    Range("G1").Select
+    ActiveSheet.ShowAllData
+    Selection.AutoFilter
+    
+ 
+    linha_arq = "1:" & Range("A1048576").End(xlUp).Row + 1
+    
+    
+    TempWb.ActiveSheet.Rows(linha_arq).Copy DestinoSh.Range("A" & Linha_dest)
+
+    TempWb.Close savechanges:=False
+
+    Application.ScreenUpdating = True
+    
+    Worksheets("Faturas Unimed").Activate
+
+    Range("A1").End(xlDown).Select
+    
+    x = MsgBox(Mensagem, Estilo, Titulo)
+    
+    
+    
+    Linha_dest = Range("A1048576").End(xlUp).Row + 1
+    
+    
+    Loop While x = vbYes
+
+    limp_arq = "A1:A" & Range("A1048576").End(xlUp).Row + 1
+    
+    Range("A1").Select
+    Selection.AutoFilter
+    ActiveSheet.Range(limp_arq).AutoFilter Field:=1, Criteria1:="Contrato"
+    ActiveCell.Offset(1, 0).Range("A1").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.EntireRow.Delete
+    Range("A1").Select
+    ActiveSheet.ShowAllData
+    
+    
+       
+    MsgBox "Feshow!!"
+    
+        
+   
+End Sub
